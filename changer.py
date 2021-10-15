@@ -3,10 +3,6 @@ import requests
 import json
 import os
 
-#TODO Auto Detect the system moniors (for XFCE4 now, maybe i3 later?
-monitorVGA= "/backdrop/screen0/monitorVGA-1/workspace0/last-image"
-monitorLVDS= "/backdrop/screen0/monitorLVDS-1/workspace0/last-image"
-monitors = [monitorLVDS,monitorVGA]
 #TODO have the user specify the folder as stdin?
 bwp = "/home/arrowx/Pictures/Bing/"
 
@@ -24,6 +20,10 @@ def main():
 
     with open(bwp+file_name, 'wb') as f:
         f.write(r_url.content)
+
+    get_monitors_cmd = "xfconf-query --channel xfce4-desktop --list | grep /workspace0| grep last-image"
+    _monitors = subprocess.run(get_monitors_cmd, shell=True, capture_output=True, text=True)
+    monitors = _monitors.stdout.splitlines()
 
     cmd_string = "xfconf-query --channel xfce4-desktop --property {mon} --set {img}"
     for i in monitors:
